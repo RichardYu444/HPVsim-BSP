@@ -43,7 +43,8 @@ def findinds(arr, vals):
     ''' Finds indices of vals in arr, accounting for repeats '''
     return isin(arr,vals).nonzero()[0]
 
-
+    #======= (to check/could be relevant): could potentially use this as a nice helper function but also can ignore and doesnt 
+    #======= contribute to the code itself
 def find_contacts(p1, p2, inds): # pragma: no cover
     """
     Numba for Layer.find_contacts()

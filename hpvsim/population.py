@@ -15,7 +15,8 @@ from . import people as hpppl
 # Specify all externally visible functions this file defines
 __all__ = ['make_people', 'make_contacts']
 
-
+    #======= (to check/could be relevant): includes cluster assignment within this (line 106)
+    #======= 
 def make_people(sim, popdict=None, reset=False, verbose=None, use_age_data=True,
                 sex_ratio=0.5, dt_round_age=True, microstructure=None,
                 age_data=None, pop_trend=None, pop_age_trend=None, **kwargs):
@@ -141,7 +142,8 @@ def make_people(sim, popdict=None, reset=False, verbose=None, use_age_data=True,
 
     return people, total_pop
 
-
+    #======= (to check/could be relevant): an equivalent to degrees per layer/includes cross layer concurrency
+    #=======
 def partner_count(n_agents=None, partner_pars=None):
     '''
     Assign each person a preferred number of concurrent partners for each layer
@@ -368,7 +370,8 @@ def create_edgelist(tind, lno, partners, current_partners, mixing, age, is_activ
     return f, m, current_partners, new_pship_inds, new_pship_counts
 
 
-
+    #======= (to check/could be relevant): interesting use as this makes the relations and can be modify to
+    #======= show clusters at each end and the mixing required for it
 def make_contacts(lno=None, tind=None, partners=None, current_partners=None,
                   ages=None, debuts=None, is_female=None, is_active=None,
                   mixing=None, layer_probs=None, f_cross_layer=None, m_cross_layer=None,
