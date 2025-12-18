@@ -11,7 +11,7 @@ if __name__=="__main__":
         verbose       = 0,          # Don't print details of the run
         rand_seed     = 2,          # Set a non-default seed
         genotypes     = [16, 18],   # Include the two genotypes of greatest general interest
-        location      = 'england'
+        location      = 'united kingdom'
     )
 
     snap = hpv.snapshot(timepoints=['2020'])

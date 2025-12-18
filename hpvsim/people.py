@@ -736,7 +736,9 @@ class People(hpb.BasePeople):
         other_deaths = self.remove_people(death_inds, cause="other")  # Apply deaths
 
         return other_deaths, deaths_female, deaths_male
-
+    
+    #======= (to check/could be relevant): the relevant line is the hppop.set_static line that assigns the new birth a cluster
+    #======= 
     def add_births(
         self,
         year=None,
@@ -804,6 +806,8 @@ class People(hpb.BasePeople):
         return (
             new_births * self.pars["pop_scale"]
         )  # These are not indices, so they scale differently
+    #======
+    #======
 
     def check_migration(self, year=None):
         """

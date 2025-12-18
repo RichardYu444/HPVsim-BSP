@@ -1799,7 +1799,8 @@ class FlexDict(dict):
     def items(self):
         return list(super().items())
 
-
+#====== (to check/could be relevant): I'm not too sure about this class and how it feeds into the bigger machine but seems relevant
+#======
 class Contacts(FlexDict):
     '''
     A simple (for now) class for storing different contact layers.
@@ -1894,7 +1895,8 @@ class Contacts(FlexDict):
         return H
 
 
-
+#====== (to check/could be relevant): I'm not too sure about this class and how it feeds into the bigger machine but seems relevant
+#======
 class Layer(FlexDict):
     '''
     A small class holding a single layer of contact edges (connections) between people.

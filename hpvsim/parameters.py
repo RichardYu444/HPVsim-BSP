@@ -36,7 +36,11 @@ def make_pars(**kwargs):
     pars['total_pop']       = None      # If defined, used for calculating the scale factor
     pars['pop_scale']       = None      # How much to scale the population
     pars['ms_agent_ratio']  = 10        # Ratio of scale factor of cancer agents to normal agents -- must be an integer
+    #======= (to check/could be relevant):
+    #=======
     pars['network']         = 'default' # What type of sexual network to use -- 'random', 'basic', other options TBC
+    #=======
+    #=======
     pars['location']        = 'nigeria' # What location to load data from -- default Nigeria
     pars['lx']              = None      # Proportion of people alive at the beginning of age interval x
     pars['birth_rates']     = None      # Birth rates, loaded below
@@ -47,6 +51,7 @@ def make_pars(**kwargs):
     pars['age_datafile']    = None
     pars['pop_datafile']    = None
     pars['popage_datafile'] = None
+    #####
 
     # Initialization parameters
     pars['init_hpv_prev'] = sc.dcp(hpd.default_init_prev) # Initial prevalence
@@ -143,7 +148,8 @@ def make_pars(**kwargs):
 
     return pars
 
-
+    #======= (to check/could be relevant): this is the place to set the layer parameters, it is used when initialised (line 15) and also called in line 146 after initial parameters have been passed
+    #=======
 # Define which parameters need to be specified as a dictionary by layer -- define here so it's available at the module level for sim.py
 layer_pars = ['f_partners', 'm_partners', 'mixing', 'acts', 'age_act_pars', 'layer_probs', 'dur_pship', 'condoms']
 
@@ -229,7 +235,8 @@ def reset_layer_pars(pars, layer_keys=None, force=False):
     pars['n_partner_types'] = len(par_layer_keys)
 
     return
-
+    #=======
+    #======= 
 
 def get_births_deaths(location, verbose=1, by_sex=True, overall=False, die=True):
     '''
@@ -442,7 +449,8 @@ def get_cross_immunity(cross_imm_med=None, cross_imm_high=None, own_imm_hr=None,
 
     return _get_from_pars(pars, default, key=genotype, defaultkey='hpv16')
 
-
+    #======= (to check/could be relevant): this one is important, especially layer_probs, this is used in lines 108 (random) and 201 (default)
+    #=======
 def get_mixing(network=None):
     '''
     Define defaults for sexual mixing matrices and the proportion of people of each age group
@@ -560,7 +568,8 @@ def get_mixing(network=None):
         raise ValueError(errormsg)
 
     return mixing, layer_probs
-
+    #=======
+    #=======
 
 
 def get_vaccine_dose_pars(default=False, vaccine=None):
@@ -756,6 +765,8 @@ def compute_severity_integral(t, rel_sev=None, pars=None):
 
     return output
 
+    #======= (to check/could be relevant): there seems to be an option to add more mixing matrix and using the clusters attribute from each agent
+    #======= do see how clustering is done in people.py
 def add_mixing(pars):
     '''
     Create additional mixing matrix
@@ -781,3 +792,5 @@ def add_mixing(pars):
     elif n_clusters == 1:
         pars['add_mixing'] = np.array([[1]])
     return
+    #======= 
+    #======= 
