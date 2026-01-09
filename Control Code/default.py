@@ -9,12 +9,12 @@ import hpvsim as hpv
 # User-adjustable settings
 # -------------------------------------------------------------------
 
-OUTPUT_DIR = r"C:\Users\richa\Documents\HPV sim Project"
+OUTPUT_DIR = r"C:\Users\richa\Documents\HPV sim Project\Code\Control Code"
 PLOT_FILE      = "control_timeseries.png"
 REDUCED_XLSX   = "control_reduced.xlsx"
 ALLRUNS_XLSX   = "control_all_runs.xlsx"
 METADATA_TXT   = "control_metadata.txt"
-N_RUNS = 5
+N_RUNS = 5 #50
 
 
 def main():
