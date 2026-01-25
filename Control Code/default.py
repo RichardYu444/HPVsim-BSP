@@ -6,7 +6,7 @@ import hpvsim as hpv
 
 
 # -------------------------------------------------------------------
-# User-adjustable settings
+# adjustable settings
 # -------------------------------------------------------------------
 
 OUTPUT_DIR = r"C:\Users\richa\Documents\HPV sim Project\Code\Control Code"
@@ -14,8 +14,16 @@ PLOT_FILE      = "control_timeseries.png"
 REDUCED_XLSX   = "control_reduced.xlsx"
 ALLRUNS_XLSX   = "control_all_runs.xlsx"
 METADATA_TXT   = "control_metadata.txt"
-N_RUNS = 5 #50
+N_RUNS = 5 
 
+desired_keys = [
+    "hpv_incidence",
+    "hpv_prev",
+    "hpv_prevalence",
+    "cins",               # CIN2+ / precancerous lesions
+    "cancer_incidence",   # Cervical cancer incidence
+    "cancer_mortality",   # Cervical cancer mortality (if modelled)
+]
 
 def main():
     #Ensure output directory exists
@@ -40,21 +48,14 @@ def main():
 
     #Run MultiSim
     print(f"Running MultiSim with n_runs = {N_RUNS}  ...")
-    msim = hpv.MultiSim(sim, n_runs=N_RUNS)
-    msim.run()
+    msim = hpv.MultiSim(sim)
+    msim.run(n_runs = N_RUNS, n_cpus = 5) #since 8 thread computer let's stick with 5 workers to be safe
     print("MultiSim run complete.")
     reduced = msim.reduce(output=True)
 
     #Plot key outcomes and save as PNG
     #We keep the important indicators in line with what is detectable irl
-    desired_keys = [
-        "hpv_incidence",
-        "hpv_prev",
-        "hpv_prevalence",
-        "cins",               # CIN2+ / precancerous lesions
-        "cancer_incidence",   # Cervical cancer incidence
-        "cancer_mortality",   # Cervical cancer mortality (if modelled)
-    ]
+
 
     base_sim = msim.base_sim
     available = []
