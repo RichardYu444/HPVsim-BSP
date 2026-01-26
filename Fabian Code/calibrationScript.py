@@ -11,7 +11,7 @@ import numpy as np
 import NHS_2025_lambdamu, NHS_Vacc
 from basePars import base_pars
 
-#NOTE: this calibration is using the NHS alg of 2025+ as an approximation of the full history of NHS screening - note that my F caloibrations show that this works when trainign to all the data, so I may as well go and train on just the start of teh data right now!
+#NOTE: this calibration is using the NHS alg of 2025+ as an approximation of the full history of NHS screening - note that my F calibrations show that this works when trainign to all the data, so I may as well go and train on just the start of teh data right now!
 
 if __name__=="__main__":
     #---SET UP SIMULATION TO CALIBRATE---#
@@ -60,8 +60,8 @@ if __name__=="__main__":
     datafiles=["caldata/new_cervical_cancer_cases_ENGSCALED1P19TOUK_START.csv",
                "caldata/mesherHPVCancerDist.csv"] #GOF < 20 means we are getting there, a GOF <16 is very good, a GOF <14.6 has beaten mine
 
-    # Create the calibration object, run it, and plot the results
-    name = "CalibrationRawResults/Jan22_6"
+    # Create the calibration object, run it, and plot the resultsl 
+    name = "CalibrationRawResults/Jan25_6"
     
     calib = hpv.Calibration(
         sim,
@@ -69,8 +69,8 @@ if __name__=="__main__":
         genotype_pars=genotype_pars,
         datafiles=datafiles,
 
-        total_trials=3, #5000
-        n_workers=1, #to be changed according to the multiprocessing capability of the hardware being used
+        total_trials=5000, #5000
+        n_workers=5, #to be changed according to the multiprocessing capability of the hardware being used
 
         keep_db=True,
         name=name

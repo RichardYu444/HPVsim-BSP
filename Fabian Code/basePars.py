@@ -15,7 +15,7 @@ casual_matrix = np.array(casual_matrix)
 start = 1980
 end = 2055
 
-base_pars = dict(n_agents= 100,#100_000, 
+base_pars = dict(n_agents= 200_000,#100_000, 
                 start=start, end=end, dt=0.25, 
                 location='united kingdom', 
                 verbose=-1,
@@ -50,7 +50,7 @@ base_pars = dict(n_agents= 100,#100_000,
 if __name__ == "__main__":
     import hpvsim as hpv
 
-    base_pars['verbose'] = 1
+    base_pars['verbose'] = 0
 
     sim = hpv.Sim(base_pars)
     sim.run()
