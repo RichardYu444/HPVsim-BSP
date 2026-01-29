@@ -1,22 +1,21 @@
 import os
 import pathlib
-
+import sciris as sc
 import matplotlib.pyplot as plt
 import hpvsim as hpv
-
-
+from basePars import base_pars
+import NHS_2025_lambdamu, basePars
 # -------------------------------------------------------------------
 # adjustable settings
 # -------------------------------------------------------------------
 
-OUTPUT_DIR = r"C:\Users\richa\Documents\HPV sim Project\Code\Control Code"
-PLOT_FILE      = "control_timeseries.png"
-REDUCED_XLSX   = "control_reduced.xlsx"
-ALLRUNS_XLSX   = "control_all_runs.xlsx"
-METADATA_TXT   = "control_metadata.txt"
-N_RUNS = 5 
+OUTPUT_DIR = r"C:\Users\richa\Documents\HPV sim Project\Code\ControlCode"
+PLOT_FILE      = "control_timeseries.png" #IMPORTANT TO CHANGE EVERYTIME
+ALLRUNS   = "control_run2.xlsx" #IMPORTANT TO CHANGE EVERYTIME (maybe?)
 
-desired_keys = [
+N_RUNS = 1 #due to multisim stuff I think 5 is max I can run on a 6 core cpu
+
+desired_pars = [
     "hpv_incidence",
     "hpv_prev",
     "hpv_prevalence",
@@ -25,6 +24,8 @@ desired_keys = [
     "cancer_mortality",   # Cervical cancer mortality (if modelled)
 ]
 
+seeds = [0, 1, 2, 3] #10 seeds gets us to 5 * 10 = 50 total runs (in theory)
+
 def main():
     #Ensure output directory exists
     outdir = pathlib.Path(OUTPUT_DIR)
@@ -32,15 +33,9 @@ def main():
     print(f"Outputs will be saved to: {outdir.resolve()}")
 
     #Define parameters directly here could be prone to adjusting later
-    pars = dict(
-        location = 'united kingdom',
-        n_agents = 1e5,             #6e5 for 1% of England population
-        start    = 1995,
-        n_years  = 40,
-        burnin   = 15,
-        verbose  = 0,
-        network  = "default",   # default sexual network
-    )
+    pars = base_pars
+
+    ##add in calibration params
 
     #Build simulation
     sim = hpv.Sim(pars=pars, label="Control default network")
@@ -49,19 +44,29 @@ def main():
     #Run MultiSim
     print(f"Running MultiSim with n_runs = {N_RUNS}  ...")
     msim = hpv.MultiSim(sim)
-    msim.run(n_runs = N_RUNS, n_cpus = 5) #since 8 thread computer let's stick with 5 workers to be safe
+    msim.run(n_runs = N_RUNS, n_cpus = 5) 
     print("MultiSim run complete.")
-    reduced = msim.reduce(output=True)
 
     #Plot key outcomes and save as PNG
     #We keep the important indicators in line with what is detectable irl
 
-
-    base_sim = msim.base_sim
+    skipped_pars = ['genotype_map', 'vaccine map']
     available = []
-    for key in desired_keys:
-        if key in base_sim.results and key not in available:
-            available.append(key)
+    #run through each sim done and 
+    for sim in msim.sims: 
+        for key in sim.results:
+            if key not in desired_pars and key not in skipped_pars:
+                skipped_pars.append(key)
+            if key in desired_pars and key not in available:
+                available.append(key)
+
+        #Try to save the run to Excel, need new file name for every 5?
+        allruns_path = outdir / ALLRUNS
+        try:
+            sim.to_excel(allruns_path, skipped_pars)
+            print(f"Saved run results to: {allruns_path}")
+        except Exception as e:
+            print(f"Could not save run results to Excel: {e}")
 
     if available:
         print(f"Plotting and saving keys: {available}")
@@ -72,33 +77,6 @@ def main():
         print(f"Saved time series plot to: {plot_path}")
     else:
         print("Warning: no desired result keys were found, so no plot was saved.")
-
-    #Save reduced simulation results to Excel
-    reduced_path = outdir / REDUCED_XLSX
-    try:
-        reduced.to_excel(reduced_path)
-        print(f"Saved reduced simulation results to: {reduced_path}")
-    except Exception as e:
-        print(f"Could not save reduced simulation to Excel: {e}")
-
-    # 7. Try to save all runs (MultiSim) to Excel (may not be supported in all versions)
-    allruns_path = outdir / ALLRUNS_XLSX
-    try:
-        msim.to_excel(allruns_path)
-        print(f"Saved all-run MultiSim results to: {allruns_path}")
-    except Exception as e:
-        print(f"Could not save MultiSim all-run results to Excel: {e}")
-
-    # 8. Write a small metadata summary file
-    meta_path = outdir / METADATA_TXT
-    try:
-        with open(meta_path, "w", encoding="utf-8") as f:
-            f.write("default-network control scenario\n")
-            f.write("-----------------------------------\n")
-            f.write(f"n_runs (MultiSim): {N_RUNS}\n")
-        print(f"Saved metadata to: {meta_path}")
-    except Exception as e:
-        print(f"Could not write metadata file: {e}")
 
     print("Done.")
 
