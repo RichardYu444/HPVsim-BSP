@@ -24,7 +24,7 @@ desired_pars = [
     "cancer_mortality",   # Cervical cancer mortality (if modelled)
 ]
 
-seeds = [0, 1, 2, 3] #10 seeds gets us to 5 * 10 = 50 total runs (in theory)
+seeds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] #10 seeds gets us to 5 * 10 = 50 total runs (in theory)
 
 def main():
     #Ensure output directory exists
@@ -33,50 +33,51 @@ def main():
     print(f"Outputs will be saved to: {outdir.resolve()}")
 
     #Define parameters directly here could be prone to adjusting later
-    pars = base_pars
-
     ##add in calibration params
+    pars = base_pars
+    for seed in seeds:
+        pars['rand_seed'] = seed
+        #Build simulation
+        sim = hpv.Sim(pars=pars, label="Control default network")
+        print("Created HPVsim simulation.")
 
-    #Build simulation
-    sim = hpv.Sim(pars=pars, label="Control default network")
-    print("Created HPVsim simulation.")
+        #Run MultiSim
+        print(f"Running MultiSim with n_runs = {N_RUNS}  ...")
+        msim = hpv.MultiSim(sim)
+        msim.run(n_runs = N_RUNS, n_cpus = 5) 
+        print("MultiSim run complete.")
 
-    #Run MultiSim
-    print(f"Running MultiSim with n_runs = {N_RUNS}  ...")
-    msim = hpv.MultiSim(sim)
-    msim.run(n_runs = N_RUNS, n_cpus = 5) 
-    print("MultiSim run complete.")
+        #We keep the important indicators in line with what is detectable irl
 
-    #Plot key outcomes and save as PNG
-    #We keep the important indicators in line with what is detectable irl
-
-    skipped_pars = ['genotype_map', 'vaccine map']
-    available = []
-    #run through each sim done and 
-    for sim in msim.sims: 
-        for key in sim.results:
-            if key not in desired_pars and key not in skipped_pars:
-                skipped_pars.append(key)
-            if key in desired_pars and key not in available:
-                available.append(key)
-
-        #Try to save the run to Excel, need new file name for every 5?
+        skipped_pars = ['genotype_map', 'vaccine map']
+        available = []
         allruns_path = outdir / ALLRUNS
-        try:
-            sim.to_excel(allruns_path, skipped_pars)
-            print(f"Saved run results to: {allruns_path}")
-        except Exception as e:
-            print(f"Could not save run results to Excel: {e}")
+        #run through each sim done and 
+        for sim in msim.sims: 
+            for key in sim.results:
+                if key not in desired_pars and key not in skipped_pars:
+                    skipped_pars.append(key)
+                if key in desired_pars and key not in available:
+                    available.append(key)
 
-    if available:
-        print(f"Plotting and saving keys: {available}")
-        fig = msim.plot(to_plot=available, do_show=False)
-        plot_path = outdir / PLOT_FILE
-        fig.savefig(plot_path, dpi=300, bbox_inches="tight")
-        plt.close(fig)
-        print(f"Saved time series plot to: {plot_path}")
-    else:
-        print("Warning: no desired result keys were found, so no plot was saved.")
+            #Try to save the run to Excel, need new file name for every 5?
+
+            try:
+                temp_df = sim.to_df(date_index = True)
+                print("sim made into df")
+            except Exception as e:
+                print(f"Could not save run results to df: {e}")
+            temp_df.to_csv('defaultruns2.csv', mode = 'a', index = True)
+
+        #if available:
+         #   print(f"Plotting and saving keys: {available}")
+          #  fig = msim.plot(to_plot=available, do_show=False)
+           # plot_path = outdir / PLOT_FILE
+          #  fig.savefig(plot_path, dpi=300, bbox_inches="tight")
+           # plt.close(fig)
+           # print(f"Saved time series plot to: {plot_path}")
+       # else:
+        #    print("Warning: no desired result keys were found, so no plot was saved.")
 
     print("Done.")
 

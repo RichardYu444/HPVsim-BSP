@@ -15,7 +15,7 @@ casual_matrix = np.array(casual_matrix)
 start = 1980
 end = 2055
 
-base_pars = dict(n_agents= 200,#100_000, 
+base_pars = dict(n_agents= 200_000,#100_000, 
                 start=start, end=end, dt=0.25, 
                 location='united kingdom', 
                 verbose=-1,
@@ -45,8 +45,8 @@ base_pars = dict(n_agents= 200,#100_000,
                 #added calibration results- these particular ones are Fabian ones
                 beta = 0.3304907040374987,
                 f_cross_layer = 0.04400514,
-                m_cross_layer = 0.4996342079150136,
-                #####to add
+                m_cross_layer = 0.4996342079150136
+                #####to add more
                 )
 
 

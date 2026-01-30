@@ -22,7 +22,7 @@ from tqdm import tqdm
 import pickle
 
 from InterventionAlgorithms import NHS_2025_lambdamu, NHS_Vacc
-from basePars import base_pars
+from ControlCode.basePars import base_pars
 import hpvsim as hpv
 
 

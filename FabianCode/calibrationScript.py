@@ -8,8 +8,8 @@ import numpy as np
 
 
 #Importing interventions from specific models of NHS England interventions
-import NHS_2025_lambdamu, NHS_Vacc
-from basePars import base_pars
+import ControlCode.NHS_2025_lambdamu as NHS_2025_lambdamu, ControlCode.NHS_Vacc as NHS_Vacc
+from ControlCode.basePars import base_pars
 
 #NOTE: this calibration is using the NHS alg of 2025+ as an approximation of the full history of NHS screening - note that my F calibrations show that this works when trainign to all the data, so I may as well go and train on just the start of teh data right now!
 
