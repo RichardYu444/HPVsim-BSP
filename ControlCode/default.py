@@ -1,46 +1,65 @@
-import os
 import pathlib
 import sciris as sc
 import matplotlib.pyplot as plt
 import hpvsim as hpv
-from basePars import base_pars
 import NHS_2025_lambdamu, basePars
+from basePars import base_pars
+import pickle
 # -------------------------------------------------------------------
 # adjustable settings
 # -------------------------------------------------------------------
 
 OUTPUT_DIR = r"C:\Users\richa\Documents\HPV sim Project\Code\ControlCode"
-PLOT_FILE      = "control_timeseries.png" #IMPORTANT TO CHANGE EVERYTIME
-ALLRUNS   = "control_run2.xlsx" #IMPORTANT TO CHANGE EVERYTIME (maybe?)
+#PLOT_FILE      = "control_timeseries.png" #IMPORTANT TO CHANGE EVERYTIME
+ALLRUNS   = "defaultAllparams.csv" #IMPORTANT TO CHANGE EVERYTIME (maybe?)
 
-N_RUNS = 1 #due to multisim stuff I think 5 is max I can run on a 6 core cpu
+N_RUNS = 5 #due to multisim stuff I think 5 is max I can run on a 6 core cpu
 
-desired_pars = [
-    "hpv_incidence",
-    "hpv_prev",
-    "hpv_prevalence",
-    "cins",               # CIN2+ / precancerous lesions
-    "cancer_incidence",   # Cervical cancer incidence
-    "cancer_mortality",   # Cervical cancer mortality (if modelled)
-]
+# this only really needed if plotting, but for now, we exclude
+# desired_results = [
+#     "hpv_incidence",
+#     "hpv_prev",
+#     "hpv_prevalence",
+#     "cins",               # CIN2+ / precancerous lesions
+#     "cancer_incidence",   # Cervical cancer incidence
+#     "cancer_mortality",   # Cervical cancer mortality (if modelled)
+# ]
 
-seeds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] #10 seeds gets us to 5 * 10 = 50 total runs (in theory)
+seeds = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54] #10 seeds gets us to 5 * 10 = 50 total runs (in theory)
 
 def main():
     #Ensure output directory exists
     outdir = pathlib.Path(OUTPUT_DIR)
     outdir.mkdir(parents=True, exist_ok=True)
     print(f"Outputs will be saved to: {outdir.resolve()}")
+    #adding sim calibration parameters
+    with open('sim_pars.pickle', 'rb') as f:
+        sim_pars = pickle.load(f)
 
-    #Define parameters directly here could be prone to adjusting later
-    ##add in calibration params
-    pars = base_pars
+    for par_name in base_pars:
+        sim_pars[par_name] = base_pars[par_name]
+
+    #addingin calibrated values
+    #Define parameters directly here could be prone to adjusting later, based on network/calibration
+    sim_pars['genotype_pars']['hi5']['cin_fn']['k'] = 0.000664989
+    sim_pars['genotype_pars']['hi5']['dur_cin']['par1'] = 7.532364881439721
+    sim_pars['genotype_pars']['hi5']['rel_beta'] = 0.064268569
+    sim_pars['genotype_pars']['hpv16']['cin_fn']['k'] = 3.5355730436187815e-05
+    sim_pars['genotype_pars']['hpv16']['dur_cin']['par1'] = 7.280958479418904
+    sim_pars['genotype_pars']['hpv18']['cin_fn']['k'] = 0.0282588677537481
+    sim_pars['genotype_pars']['hpv18']['dur_cin']['par1'] = 2.4115489232500136
+    sim_pars['genotype_pars']['ohr']['cin_fn']['k'] = 0.074766782
+    sim_pars['genotype_pars']['ohr']['dur_cin']['par1'] = 10.941333033716116
+    sim_pars['genotype_pars']['ohr']['rel_beta'] = 0.9408537321469647
+
+    #run through seeds to run sim, 5 at a time, hence the gaps in seeds
     for seed in seeds:
-        pars['rand_seed'] = seed
+        base_pars['rand_seed'] = seed
         #Build simulation
-        sim = hpv.Sim(pars=pars, label="Control default network")
+        sim = hpv.Sim(base_pars, label="Control default network")
+        #add in the genotype parameters
+        sim.update_pars(sim_pars)
         print("Created HPVsim simulation.")
-
         #Run MultiSim
         print(f"Running MultiSim with n_runs = {N_RUNS}  ...")
         msim = hpv.MultiSim(sim)
@@ -49,16 +68,18 @@ def main():
 
         #We keep the important indicators in line with what is detectable irl
 
-        skipped_pars = ['genotype_map', 'vaccine map']
-        available = []
+        skipped_pars = ['genotype_map', 'vaccine map'] #these are skipped as their datatype doesn't convert to df
+        # available = []
         allruns_path = outdir / ALLRUNS
+        #i helps keep track of which seed we are on, but is onlly for debugging purposes really
+        i = 0
         #run through each sim done and 
         for sim in msim.sims: 
-            for key in sim.results:
-                if key not in desired_pars and key not in skipped_pars:
-                    skipped_pars.append(key)
-                if key in desired_pars and key not in available:
-                    available.append(key)
+            # for key in sim.results:
+            #     if key not in desired_results and key not in skipped_pars:
+            #         skipped_pars.append(key)
+            #     if key in desired_pars and key not in available:
+            #         available.append(key)
 
             #Try to save the run to Excel, need new file name for every 5?
 
@@ -67,7 +88,10 @@ def main():
                 print("sim made into df")
             except Exception as e:
                 print(f"Could not save run results to df: {e}")
-            temp_df.to_csv('defaultruns2.csv', mode = 'a', index = True)
+            temp_df['Seed'] = seed
+            temp_df.to_csv(ALLRUNS, mode = 'a', index = True)
+            print(f'Seed:{seed + i} is done')
+            i += 1
 
         #if available:
          #   print(f"Plotting and saving keys: {available}")
