@@ -11,7 +11,7 @@ import pickle
 
 OUTPUT_DIR = r"C:\Users\richa\Documents\HPV sim Project\Code\ControlCode"
 #PLOT_FILE      = "control_timeseries.png" #IMPORTANT TO CHANGE EVERYTIME
-ALLRUNS   = "defaultAllparams.csv" #IMPORTANT TO CHANGE EVERYTIME (maybe?)
+ALLRUNS   = "defaultNoScreen02Feb.csv" #IMPORTANT TO CHANGE EVERYTIME (maybe?)
 
 N_RUNS = 5 #due to multisim stuff I think 5 is max I can run on a 6 core cpu
 
@@ -88,7 +88,7 @@ def main():
                 print("sim made into df")
             except Exception as e:
                 print(f"Could not save run results to df: {e}")
-            temp_df['Seed'] = seed
+            temp_df['Seed'] = seed + i
             temp_df.to_csv(ALLRUNS, mode = 'a', index = True)
             print(f'Seed:{seed + i} is done')
             i += 1
