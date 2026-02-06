@@ -2,8 +2,8 @@ import pathlib
 import sciris as sc
 import matplotlib.pyplot as plt
 import hpvsim as hpv
-import NHS_2025_lambdamu, FabianCode.basePars as basePars
-from FabianCode.basePars import base_pars
+import NHS_2025_lambdamu, basePars as basePars
+from basePars import base_pars_geno
 import pickle
 # -------------------------------------------------------------------
 # adjustable settings
@@ -11,7 +11,7 @@ import pickle
 
 OUTPUT_DIR = r'C:\Users\richa\Documents\HPV sim Project\Code\ControlCode'
 #PLOT_FILE      = 'control_timeseries.png' #IMPORTANT TO CHANGE EVERYTIME
-ALLRUNS   = 'defaultNoScreen02Feb.csv' #IMPORTANT TO CHANGE EVERYTIME (maybe?)
+ALLRUNS   = 'default.csv' #IMPORTANT TO CHANGE EVERYTIME (maybe?)
 
 N_RUNS = 5 #due to multisim stuff I think 5 is max I can run on a 6 core cpu
 
@@ -25,40 +25,19 @@ N_RUNS = 5 #due to multisim stuff I think 5 is max I can run on a 6 core cpu
 #     'cancer_mortality',   # Cervical cancer mortality (if modelled)
 # ]
 
-seeds = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54] #10 seeds gets us to 5 * 10 = 50 total runs (in theory)
+seeds = [0]#, #6, 12, 18, 24, 30, 36, 42, 48, 54] #10 seeds gets us to 5 * 10 = 50 total runs (in theory)
 
 def main():
     #Ensure output directory exists
     outdir = pathlib.Path(OUTPUT_DIR)
     outdir.mkdir(parents=True, exist_ok=True)
     print(f'Outputs will be saved to: {outdir.resolve()}')
-    #adding sim calibration parameters
-    with open('sim_pars.pickle', 'rb') as f:
-        sim_pars = pickle.load(f)
-
-    for par_name in base_pars:
-        sim_pars[par_name] = base_pars[par_name]
-
-    #addingin calibrated values
-    #Define parameters directly here could be prone to adjusting later, based on network/calibration
-    sim_pars['genotype_pars']['hi5']['cin_fn']['k'] = 0.000664989
-    sim_pars['genotype_pars']['hi5']['dur_cin']['par1'] = 7.532364881439721
-    sim_pars['genotype_pars']['hi5']['rel_beta'] = 0.064268569
-    sim_pars['genotype_pars']['hpv16']['cin_fn']['k'] = 3.5355730436187815e-05
-    sim_pars['genotype_pars']['hpv16']['dur_cin']['par1'] = 7.280958479418904
-    sim_pars['genotype_pars']['hpv18']['cin_fn']['k'] = 0.0282588677537481
-    sim_pars['genotype_pars']['hpv18']['dur_cin']['par1'] = 2.4115489232500136
-    sim_pars['genotype_pars']['ohr']['cin_fn']['k'] = 0.074766782
-    sim_pars['genotype_pars']['ohr']['dur_cin']['par1'] = 10.941333033716116
-    sim_pars['genotype_pars']['ohr']['rel_beta'] = 0.9408537321469647
 
     #run through seeds to run sim, 5 at a time, hence the gaps in seeds
     for seed in seeds:
-        base_pars['rand_seed'] = seed
+        base_pars_geno['rand_seed'] = seed
         #Build simulation
-        sim = hpv.Sim(base_pars, label='Control default network')
-        #add in the genotype parameters
-        sim.update_pars(sim_pars)
+        sim = hpv.Sim(base_pars_geno, label='Control default network')
         print('Created HPVsim simulation.')
         #Run MultiSim
         print(f'Running MultiSim with n_runs = {N_RUNS}  ...')
