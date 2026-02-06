@@ -20,10 +20,10 @@ base_pars = dict(n_agents= 200_000,#100_000,
                 location='united kingdom', 
                 verbose=-1,
                 debut=dict(f=dict(dist='normal', par1=16.0, par2=3.1), m=dict(dist='normal', par1=16.0, par2=4.1)),
-                mixing = {'m':married_matrix,
-                          'c':casual_matrix},
-                condoms = dict(m=0.17, c=0.50), #condom usage in (m)arried and (c)asual relationships
-                
+                #mixing = {'m':married_matrix,
+                          #'c':casual_matrix},
+                #condoms = dict(m=0.17, c=0.50), #condom usage in (m)arried and (c)asual relationships
+                network = 'random',
                 genotypes     = ['hpv16', 'hpv18', 'hi5', 'ohr'],
 
                 init_hpv_prev = {
@@ -44,9 +44,9 @@ base_pars = dict(n_agents= 200_000,#100_000,
 
                 burnin = 20,
                 #added calibration results- these particular ones are Fabian ones
-                beta = 0.3304907040374987,
-                f_cross_layer = 0.04400514,
-                m_cross_layer = 0.4996342079150136
+                #beta = 0.3304907040374987,
+                #f_cross_layer = 0.04400514,
+                #m_cross_layer = 0.4996342079150136
                 #####to add more
                 )
 

@@ -2,7 +2,7 @@ import pandas as pd
 import sciris as sc
 import pickle
 import hpvsim as hpv
-from basePars import base_pars
+from FabianCode.basePars import base_pars
 
 
 sim = hpv.Sim(base_pars)
