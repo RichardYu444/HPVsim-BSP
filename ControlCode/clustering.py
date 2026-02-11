@@ -2,17 +2,17 @@ import pandas as pd
 import sciris as sc
 import pickle
 import hpvsim as hpv
-from FabianCode.basePars import base_pars
+from basePars import base_pars
 
-
-sim = hpv.Sim(base_pars)
+snap = hpv.snapshot(timepoints=['2000'])
+sim = hpv.Sim(base_pars, analyzers=snap)
 
 sim.run()
-df = sim.to_df()
-df['seed'] = 1
-df.to_csv('test.csv', mode = 'a', index = True)
-
-
+a = sim.get_analyzer()
+people = a.snapshots[0]
+print(people.contacts)
+print(people.contacts['m']['f'])
+print(people.contacts['m']['m'])
 # # sim = hpv.Sim(base_pars) 
 
 
