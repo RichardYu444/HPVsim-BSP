@@ -1,0 +1,41 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+from networkx.algorithms import bipartite
+
+B = nx.Graph()
+
+#set up two sets of bipartite networks
+A_nodes = [f"A{i}" for i in range(2)]
+B_nodes = [f"B{i}" for i in range(2)]
+
+B.add_nodes_from(A_nodes, bipartite = 0)
+B.add_nodes_from(B_nodes, bipartite = 1)
+
+edges = [
+    ("A0","B0"), ("A0","B1"),
+    ("A1","B0"), ("A1","B1"),
+]
+
+B.add_edges_from(edges)
+
+colour_map = []
+for n in B.nodes():
+    if B.nodes[n].get("bipartite") == 0:
+        colour_map.append("tab:grey")
+    elif B.nodes[n].get("bipartite") == 1:
+        colour_map.append("tab:red")
+    else:
+        print("error: bipartite code not found")
+
+pos = {"A0": (0, 0), "A1": (1, 1), "B0": (0, 1), "B1": (1, 0)}
+
+nx.draw(B, with_labels = True,
+        node_color = colour_map,
+        pos = pos,
+        node_size = 5000,
+        font_weight='bold'
+        )
+
+plt.title("Squared 4-cycle")
+plt.margins(0.3)
+plt.show()
