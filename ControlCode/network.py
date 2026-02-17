@@ -3,9 +3,23 @@ import sciris as sc
 import numpy as np
 import pickle
 import hpvsim as hpv
-from basePars import base_pars
+from basePars import base_pars_geno
 import networkx as nx
 import matplotlib.pyplot as plt
+import pathlib
+from networkx.algorithms import bipartite
+
+
+OUTPUT_DIR = r'C:\Users\richa\Documents\HPV sim Project\Code\ControlCode'
+seeds = [0, 1, 2, 3, 4]#, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 51, 52, 54, 55, 56, 57, 58] #I messed up counting in the original stuff...
+years = [
+    "2000", "2005",
+    "2010", "2015",
+    "2020","2025",
+    "2030","2035",
+    "2040"
+] #burn in is from 2000 and we target 2040 target
+
 #this funciton takes all the snapshots and returns all the edges ever formed
 def get_network(analyzer):
 #initialise to store all the edges, it will store a number of pairs (ordered) which are the edges [male id, female id]
@@ -28,22 +42,42 @@ def get_network(analyzer):
     female_nodes = np.unique(females)
     return (edges, male_nodes, female_nodes)
 
-#we want a snapshot of every year (that we care about)
-snap = hpv.snapshot(timepoints=['2000', '2001'])
+if __name__ == '__main__':
+    outdir = pathlib.Path(OUTPUT_DIR)
+    outdir.mkdir(parents=True, exist_ok=True)
+    print(f'Outputs will be saved to: {outdir.resolve()}')
+    #we want a snapshot of every year (that we care about)
+    snap = hpv.snapshot(timepoints= years)
+    for seed in seeds:
+        base_pars_geno['rand_seed'] = seed
+        #run the sim with the snapshots integrated
+        sim = hpv.Sim(base_pars_geno, analyzers=snap)
+        sim.run()
+        # 'a' should have all the snapshots indexed 0 to n for each year
+        a = sim.get_analyzer()
+        (edges, male_nodes, female_nodes) = get_network(a)
+        G = nx.Graph()
+        G.add_nodes_from(male_nodes, bipartite = 0)
+        G.add_nodes_from(female_nodes, bipartite = 1)
+        G.add_edges_from(edges)
 
-#run the sim with the snapshots integrated
-sim = hpv.Sim(base_pars, analyzers=snap)
-sim.run()
-# 'a' should have all the snapshots indexed 0 to n for each year
-a = sim.get_analyzer()
-(edges, nodes) = get_network(a)
-print(edges)
-print(nodes)
+        #exporting edges etc as a csv for future use
+        nodes_df = pd.DataFrame([
+            {'node': n, **G.nodes[n]}
+            for n in G.nodes()
+        ])
+        nodes_df.to_csv('graph_nodes.csv', mode = 'a', index= True)    
+        edges_df = pd.DataFrame([
+            {"source": u, "target": v, **G.edges[u, v]}
+            for u, v in G.edges()
+        ])
+        edges_df.to_csv("graph_edges.csv", mode = 'a', index= True)
 
-G = nx.Graph()
-G.add_nodes_from(nodes)
-G.add_edges_from(edges)
-print(G.edges)
-nx.draw(G, with_labels = True, node_size = 1)
-plt.show()
-## use NetworkX to plot some stuff
+        #drawing graph with bipartite colour
+        color = bipartite.color(G)
+
+        color_dict = {0:'b',1:'r'}
+
+        color_list = [color_dict[i[1]] for i in G.nodes.data('bipartite')]
+        nx.draw(G, with_labels = False, node_size = 1, node_color = color_list)
+        plt.show()
