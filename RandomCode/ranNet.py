@@ -8,7 +8,7 @@ import pickle
 
 
 OUTPUT_DIR = r'C:\Users\richa\Documents\HPV sim Project\Code\RandomCode'
-ALLRUNS   = 'RandomNoVac.csv' #IMPORTANT TO CHANGE EVERYTIME
+ALLRUNS   = 'RandomNoInterventions.csv' #IMPORTANT TO CHANGE EVERYTIME
 
 N_RUNS = 5 #due to multisim stuff I think 5 is max I can run on a 6 core cpu
 
