@@ -10,20 +10,9 @@ import pickle
 # -------------------------------------------------------------------
 
 OUTPUT_DIR = r'C:\Users\richa\Documents\HPV sim Project\Code\ControlCode'
-#PLOT_FILE      = 'control_timeseries.png' #IMPORTANT TO CHANGE EVERYTIME
 ALLRUNS   = 'default.csv' #IMPORTANT TO CHANGE EVERYTIME (maybe?)
 
 N_RUNS = 5 #due to multisim stuff I think 5 is max I can run on a 6 core cpu
-
-# this only really needed if plotting, but for now, we exclude
-# desired_results = [
-#     'hpv_incidence',
-#     'hpv_prev',
-#     'hpv_prevalence',
-#     'cins',               # CIN2+ / precancerous lesions
-#     'cancer_incidence',   # Cervical cancer incidence
-#     'cancer_mortality',   # Cervical cancer mortality (if modelled)
-# ]
 
 seeds = [0]#, #6, 12, 18, 24, 30, 36, 42, 48, 54] #10 seeds gets us to 5 * 10 = 50 total runs (in theory)
 

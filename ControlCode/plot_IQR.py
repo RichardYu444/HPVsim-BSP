@@ -4,14 +4,13 @@ from matplotlib.ticker import StrMethodFormatter
 #This is the code that I will use to transform my CSVs into plots
 
 # Load csv file, change name/path as needed
-df = pd.read_csv('defaultallparam02Feb.csv') 
+df = pd.read_csv('defaultNoVacc02Feb.csv') 
 #these are the values we care about plotting
 values = [
-  'infections', #total HPV infections
-  'n_infected', #this is hpv incidences
-  'cins',
-  'cancers',
-  'hpv_prevalence'
+  #'infections', #total HPV infections
+  #'n_infected', #this is hpv incidences
+  #'cins',
+  'cancer_incidence'
 ]
 
 def plot_iqr(value: str, time: str = 't', title = 'IQR timeseries'): #time_col can be 'year' instead
@@ -26,7 +25,7 @@ def plot_iqr(value: str, time: str = 't', title = 'IQR timeseries'): #time_col c
   )
 
   # Convert to numpy arrays 
-  x   = q['t'].to_numpy()
+  x   = q['year'].to_numpy()
   #min = q['min'].to_numpy()
   q25 = q['q25'].to_numpy()
   med = q['median'].to_numpy()
@@ -45,7 +44,7 @@ def plot_iqr(value: str, time: str = 't', title = 'IQR timeseries'): #time_col c
   ax.plot(x, med, linewidth = 2, label = 'Median', color = 'black')      # prominent
   ax.plot(x, q75, linewidth = 1, color = 'lightblue')
   ax.ticklabel_format(style="plain", axis="y")
-  ax.set_xlim(left=0)
+  ax.set_xlim(left=2000, right=2050)
   if value.endswith("prevalence"):
     ax.yaxis.set_major_formatter(StrMethodFormatter("{x:.2f}"))
   else:
@@ -55,6 +54,7 @@ def plot_iqr(value: str, time: str = 't', title = 'IQR timeseries'): #time_col c
     ax.set_xlabel('Years Past')
   else:
     ax.set_xlabel(time)
+  plt.axhline(y= 4, color='r', linestyle='-', label = '2040 Target')  
   ax.set_ylabel(value)
   ax.set_title(title)
   ax.grid(True, linewidth = 0.5, alpha = 0.4)
@@ -63,8 +63,7 @@ def plot_iqr(value: str, time: str = 't', title = 'IQR timeseries'): #time_col c
 
 figs = []
 for v in values:
-  fig, ax = plot_iqr(value = v, title = f'{v} time series')
+  fig, ax = plot_iqr(value = v, time = 'year', title = "Cancers per 100k")
   figs.append(fig)
-
 plt.tight_layout()
 plt.show()

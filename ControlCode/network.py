@@ -11,12 +11,12 @@ from networkx.algorithms import bipartite
 
 
 OUTPUT_DIR = r'C:\Users\richa\Documents\HPV sim Project\Code\ControlCode'
-seeds = [0, 1, 2, 3, 4]#, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 51, 52, 54, 55, 56, 57, 58] #I messed up counting in the original stuff...
+seeds = [0, 1, 2, 3, 4, 6, 7, 8, 9, 10]#, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 51, 52, 54, 55, 56, 57, 58] #I messed up counting in the original stuff...
 years = [
-    "2000", "2005",
-    "2010", "2015",
-    "2020","2025",
-    "2030","2035",
+    "2000", "2002", "2004", "2006", "2008",
+    "2010", "2012", "2014", "2016", "2018", 
+    "2020", "2022", "2024", "2026", "2028",
+    "2030", "2032", "2034", "2036", "2038",
     "2040"
 ] #burn in is from 2000 and we target 2040 target
 
@@ -73,11 +73,11 @@ if __name__ == '__main__':
         ])
         edges_df.to_csv("graph_edges.csv", mode = 'a', index= True)
 
-        #drawing graph with bipartite colour
-        color = bipartite.color(G)
+    #drawing graph with bipartite colour
+    color = bipartite.color(G)
 
-        color_dict = {0:'b',1:'r'}
+    color_dict = {0:'b',1:'r'}
 
-        color_list = [color_dict[i[1]] for i in G.nodes.data('bipartite')]
-        nx.draw(G, with_labels = False, node_size = 1, node_color = color_list)
-        plt.show()
+    color_list = [color_dict[i[1]] for i in G.nodes.data('bipartite')]
+    nx.draw(G, with_labels = False, node_size = 1, node_color = color_list)
+    plt.show()
