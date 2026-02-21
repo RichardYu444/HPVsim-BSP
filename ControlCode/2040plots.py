@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 import numpy as np
+from matplotlib.ticker import MaxNLocator
 #This is the code that I will use to tplot 2040 stats against our UK target (below 4 per 100,000)
 
 # Load csv file, change name/path as needed
@@ -20,13 +21,17 @@ s4 = df_noVacc.loc[df_noVacc["year"]  == year_target, col].dropna().to_numpy()
 
 plt.figure(figsize=(7,4))
 plt.boxplot([s1, s2, s3, s4],
-            labels=["All Interventions", "No Interventions", "No Screening", "No Vaccination"],
+            tick_labels=["All Interventions", "No Interventions", "Vaccination Only", "Screening Only"],
             showmeans=True,
             showfliers=False
             )
-plt.ylabel(f"Cancers per 100,000 Women")
-plt.title(f"Cancer incidence in {year_target}")
-plt.axhline(y= 4, color='r', linestyle='-', label = '2040 Target')  
-plt.tight_layout()
+plt.ylabel(f"Cancer incidence in {year_target}")
+plt.title("Cancers per 100,000 Women - Default Network")
+
+target_line = plt.axhline(y= 4, color='r', linestyle='-', label = '2040 Target')  
+plt.legend(handles = [target_line])
+plt.ylim(0, 20)
+plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
 plt.show()
+
 
