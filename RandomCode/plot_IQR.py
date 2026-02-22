@@ -4,14 +4,14 @@ from matplotlib.ticker import StrMethodFormatter
 #This is the code that I will use to transform my CSVs into plots
 
 # Load csv file, change name/path as needed
-df = pd.read_csv('RandomNoScreen.csv') 
+df = pd.read_csv('RandomNoInterventions.csv') 
 #these are the values we care about plotting
 values = [
   'infections', #total HPV infections
   'n_infected', #this is hpv incidences
   'cins',
-  'cancers',
-  'hpv_prevalence'
+  #'cancers',
+  #'hpv_prevalence'
   #'cancer_incidence'
 ]
 
@@ -47,6 +47,7 @@ def plot_iqr(value: str, time: str = 't', title = 'IQR timeseries'): #time_col c
   ax.plot(x, med, linewidth = 2, label = 'Median', color = 'black')      # prominent
   ax.plot(x, q75, linewidth = 1, color = 'lightblue')
   ax.ticklabel_format(style="plain", axis="y")
+  ax.set_xlim(left=1980, right=2050)
   ax.set_ylim(bottom=0)
   if value.endswith("prevalence"):
     ax.yaxis.set_major_formatter(StrMethodFormatter("{x:.2f}"))
@@ -59,14 +60,13 @@ def plot_iqr(value: str, time: str = 't', title = 'IQR timeseries'): #time_col c
     ax.set_xlabel(time)
   ax.set_ylabel(value)
   ax.set_title(title)
-  ax.set_xlim(left=1999, right=2050)
   ax.grid(True, linewidth = 0.5, alpha = 0.4)
   ax.legend()
   return fig, ax
 
 figs = []
 for v in values:
-  fig, ax = plot_iqr(value = v, time = 'year', title = f'{v} time series')
+  fig, ax = plot_iqr(value = v, time = 'year', title = f'{v}')
   figs.append(fig)
 
 
