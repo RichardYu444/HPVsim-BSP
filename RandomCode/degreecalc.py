@@ -4,8 +4,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-edges_path = r"graph_edges.csv"
-nodes_path = r"graph_nodes.csv"
+edges_path = r"all_seeds_graph_edges.csv"
+nodes_path = r"all_seeds_graph_nodes.csv"
 all_deg = []
 #as each run is appended into the same csv file, we first want to split them into each run
 def split_runs(raw_df, header_vals):
@@ -93,6 +93,7 @@ for run_i in range(n_runs):
     #plt.close()
 
 all_deg = np.concat(all_deg)
+print("Mean degree across all runs, all nodes: ", np.average(all_deg))
 unique_deg, counts = np.unique(degrees, return_counts=True)
 np.append(0, unique_deg)
 props = counts / sum(counts)

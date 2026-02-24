@@ -4,9 +4,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-edges_path = r"graph_edges.csv"
-nodes_path = r"graph_nodes.csv"
-N = 5000 #number of agents used, this way we include 0 degree agents too
+edges_path = r"all_seeds_graph_edges.csv"
+nodes_path = r"all_seeds_graph_nodes.csv"
+all_deg = []
 #as each run is appended into the same csv file, we first want to split them into each run
 def split_runs(raw_df, header_vals):
     """Split a raw CSV (read with header=None) into runs separated by repeated header rows."""
@@ -65,28 +65,49 @@ for run_i in range(n_runs):
 
     # Degree stats
     degrees = np.array([d for _, d in G.degree()], dtype=int)
+    all_deg.append(degrees)
     mean_deg = degrees.mean() if len(degrees) else float("nan")
     print(f"Run {run_i+1}: nodes={G.number_of_nodes()} edges={G.number_of_edges()} mean_degree={mean_deg:.4f}")
 
-    unique_deg, counts = np.unique(degrees, return_counts=True)
+    #unique_deg, counts = np.unique(degrees, return_counts=True)
 
-    props = counts / N  # proportions (sums to 1)
+    #props = counts / G.number_of_nodes()  # proportions (sums to 1)
 
-    plt.figure(figsize=(6, 4))
-    plt.bar(unique_deg, props, width=0.9)
+    #plt.figure(figsize=(6, 4))
+    #plt.bar(unique_deg, props, width=0.9)
 
-    plt.xlabel("Degree")
-    plt.ylabel("Proportion of nodes")
-    plt.title(f"Degree distribution (run {run_i+1})")
+    #plt.xlabel("Degree")
+    #plt.ylabel("Proportion of nodes")
+    #plt.title(f"Degree distribution (run {run_i+1})")
 
     # x-axis: integers only
-    from matplotlib.ticker import MaxNLocator
-    ax = plt.gca()
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    #from matplotlib.ticker import MaxNLocator
+    #ax = plt.gca()
+    #ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-    plt.tight_layout()
+    #plt.tight_layout()
 
 
-    plot_path = out_dir / f"degree_distribution_run_{run_i+1}.png"
-    plt.savefig(plot_path, dpi=200)
-    plt.close()
+    #plot_path = out_dir / f"degree_distribution_run_{run_i+1}.png"
+    #plt.savefig(plot_path, dpi=200)
+    #plt.close()
+
+all_deg = np.concat(all_deg)
+print("Mean degree across all runs, all nodes: ", np.average(all_deg))
+unique_deg, counts = np.unique(degrees, return_counts=True)
+np.append(0, unique_deg)
+props = counts / sum(counts)
+cum_prop = [0]
+dummy = 0
+for prop in props:
+    dummy += prop
+    cum_prop.append(dummy)
+fig, ax = plt.subplots()
+ax.plot(np.arange(0, 11), cum_prop)
+plt.ylim(bottom = 0, top = 1)
+plt.title('Cumulative Degree Distribution- Random Network')
+plt.xlabel('Number of Partners')
+plt.ylabel('Cumulative Distribution')
+plt.xlim(left = 0, right = 10)
+ax.fill_between(np.arange(0, 11), 0, cum_prop, color = 'lightsteelblue')
+plt.show()
