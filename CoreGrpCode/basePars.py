@@ -23,8 +23,7 @@ base_pars = dict(n_agents= 2000,#200_000,
                 mixing = {'m':married_matrix,
                           'c':casual_matrix},
                 condoms = dict(m=0.17, c=0.50), #condom usage in (m)arried and (c)asual relationships
-                #network = 'random',
-                genotypes     = ['hpv16'],#, 'hpv18', 'hi5', 'ohr'],
+                genotypes     = ['hpv16', 'hpv18', 'hi5', 'ohr'],
 
                 init_hpv_prev = {
                     'age_brackets'  : np.array([  16,   24,   34,   44,  54,   64, 150]),
@@ -33,10 +32,10 @@ base_pars = dict(n_agents= 2000,#200_000,
                 },
 
                 init_hpv_dist = {
-                    'hpv16': 2.3#,
-                #    'hpv18': 0.9,
-                 #   'hi5':  2.2, #HPV 33 is not listed as one of the top 10 most prevalent in general population in (), so we can assume its prevalence is at most 0.004 - so not adding this to the sum
-                  #  'ohr': 2.1,
+                    'hpv16': 2.3,
+                    'hpv18': 0.9,
+                    'hi5':  2.2, #HPV 33 is not listed as one of the top 10 most prevalent in general population in (), so we can assume its prevalence is at most 0.004 - so not adding this to the sum
+                    'ohr': 2.1,
                 }, #(note, this measure will be rescaled to a prob distribution by hpvsim.utils.choose_w)
 
                 #interventions = #NHS_2025_lambdamu.get_interventions(l=1, m=1)
@@ -47,8 +46,14 @@ base_pars = dict(n_agents= 2000,#200_000,
                 beta = 0.3304907040374987,
                 f_cross_layer = 0.04400514,
                 m_cross_layer = 0.4996342079150136
-
                 )
+
+#clustering stuff
+base_pars['n_clusters'] = 5
+base_pars['relative_rel_sizes']= [0.6, 0.1, 0.1, 0.1, 0.1]
+
+
+#further calibration figures
 #initialise genotype_pars as a concept
 #base_pars['genotype_pars'] = sc.objdict()
 #grab the genotypes dict from hpv source code
