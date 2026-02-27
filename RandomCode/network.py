@@ -10,13 +10,18 @@ import pathlib
 from networkx.algorithms import bipartite
 
 
-OUTPUT_DIR = r'C:\Users\richa\Documents\HPV sim Project\Code\RandomCode'
+OUTPUT_DIR = r'C:\Users\richa\Documents\HPV sim Project\Code\RandomCode\NetworkCSVs'
 seeds = [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 51, 52, 54, 55, 56, 57, 58] #I messed up counting in the original stuff...
 years = [
-    "2000", "2005",#2002", "2004", "2006", "2008",
-    "2010", "2015",#"2012", "2014", "2016", "2018", 
-    "2020", "2025",#"2022", "2024", "2026", "2028",
-    "2030", "2035",#"2032", "2034", "2036", "2038",
+    #"2000", "2001", "2002", "2003", "2004",
+    #"2005", "2006",#
+    #"2007", "2008", "2009"
+    #"2010", "2011", "2012", "2013", "2014"
+    #"2015", "2016", "2017", "2018", "2019"
+    #"2020", "2021", "2022", "2023", "2024"
+    #"2025", "2026", "2027", "2028", "2029"
+    #"2030", "2031", "2032", "2033", "2034"
+    "2035", "2036", "2037", "2038", "2039",
     "2040"
 ] #burn in is from 2000 and we target 2040 target
 
@@ -27,10 +32,12 @@ def get_network(analyzer):
     #similarly this is to store all the nodes
     male_arrs = [] 
     female_arrs = []
-    for i in range(len(years)): #this 2 is to be changed depending on the number of snapshots, will just hard code this in for now
+    for i in range(len(years)): 
         people = analyzer.snapshots[i]
         male_arrs.append(people.contacts['a']['m'])
+        #male_arrs.append(people.contacts['c']['m'])
         female_arrs.append(people.contacts['a']['f'])
+        #female_arrs.append(people.contacts['c']['f'])
 
     #adding an identifier as currently these nodes have overlapping (int) ids
     males = np.concat(male_arrs).astype(str) + "m"
@@ -53,7 +60,7 @@ if __name__ == '__main__':
         #run the sim with the snapshots integrated
         sim = hpv.Sim(base_pars_geno, analyzers=snap)
         sim.run()
-        # 'a' should have all the snapshots indexed 0 to n for each year
+        # 'a' has all the snapshots indexed 0 to n for each year
         a = sim.get_analyzer()
         (edges, male_nodes, female_nodes) = get_network(a)
         G = nx.Graph()
@@ -63,22 +70,16 @@ if __name__ == '__main__':
 
         #exporting edges etc as a csv for future use
         nodes_df = pd.DataFrame([
-            {'node': n, **G.nodes[n]}
+            {'node': n, **G.nodes[n], 'seed': seed}
             for n in G.nodes()
         ])
-        nodes_df.to_csv('all_seeds_graph_nodes.csv', mode = 'a', index= True)    
+        nodes_df.to_csv(outdir /"all_seeds_graph_nodes35-40.csv", mode = 'a', index= True)    
         edges_df = pd.DataFrame([
-            {"source": u, "target": v, **G.edges[u, v]}
+            {"source": u, "target": v, **G.edges[u, v], 'seed': seed}
             for u, v in G.edges()
         ])
-        edges_df.to_csv("all_seeds_graph_edges.csv", mode = 'a', index= True)
+        edges_df.to_csv(outdir /"all_seeds_graph_edges35-40.csv", mode = 'a', index= True)
+        print(f"seed {seed} is done")
+    print('All done!')
 
-    #drawing graph with bipartite colour
-    color = bipartite.color(G)
 
-    color_dict = {0:'b',1:'r'}
-    pos = nx.spring_layout(G, seed=1, k=0.25, iterations=200) 
-    color_list = [color_dict[i[1]] for i in G.nodes.data('bipartite')]
-    nx.draw_networkx_nodes(G, pos, node_size=4, node_color = color_list)
-    nx.draw_networkx_edges(G, pos, width=0.5)
-    plt.show()

@@ -57,10 +57,6 @@ for seed in seeds:
     G.add_edges_from(
         zip(seed_edges["source"], seed_edges["target"])
     )
-
-    print("Graph nodes:", G.number_of_nodes())
-    print("Graph edges:", G.number_of_edges())
-
     #Debugging
     edge_nodes = set(seed_edges["source"]).union(set(seed_edges["target"]))
     missing = edge_nodes - set(seed_nodes["node"])
@@ -106,7 +102,7 @@ plt.plot(unique_deg, cum_prop)
 plt.xscale("log")   # 🔹 Log scale on x-axis
 plt.ylim(0, 1)
 
-plt.title("Cumulative Degree Distribution - Random Network")
+plt.title("Cumulative Degree Distribution - Default Network")
 plt.xlabel("Number of Partners (log scale)")
 plt.ylabel("Cumulative Distribution")
 
