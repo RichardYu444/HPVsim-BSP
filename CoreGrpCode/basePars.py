@@ -15,14 +15,15 @@ casual_matrix = np.array(casual_matrix)
 start = 1980
 end = 2055
 
-base_pars = dict(n_agents= 2000,#200_000, 
+base_pars = dict(n_agents= 500,#200_000, 
                 start=start, end=end, dt=0.25, 
                 location='united kingdom', 
                 verbose=-1,
                 debut=dict(f=dict(dist='normal', par1=16.0, par2=3.1), m=dict(dist='normal', par1=16.0, par2=4.1)),
-                mixing = {'m':married_matrix,
-                          'c':casual_matrix},
-                condoms = dict(m=0.17, c=0.50), #condom usage in (m)arried and (c)asual relationships
+                network = 'random',
+                #mixing = {'m':married_matrix,
+                 #         'c':casual_matrix},
+                #condoms = dict(m=0.17, c=0.50), #condom usage in (m)arried and (c)asual relationships
                 genotypes     = ['hpv16', 'hpv18', 'hi5', 'ohr'],
 
                 init_hpv_prev = {
@@ -40,19 +41,32 @@ base_pars = dict(n_agents= 2000,#200_000,
 
                 #interventions = #NHS_2025_lambdamu.get_interventions(l=1, m=1)
                 #NHS_Vacc.vaccinations,
-
                 burnin = 20,
-                #added calibration results- these particular ones are Fabian ones
-                beta = 0.3304907040374987,
-                f_cross_layer = 0.04400514,
-                m_cross_layer = 0.4996342079150136
                 )
 
 #clustering stuff
-base_pars['n_clusters'] = 5
-base_pars['relative_rel_sizes']= [0.6, 0.1, 0.1, 0.1, 0.1]
-
-
+n_clusters = 20
+base_pars['n_clusters'] = n_clusters
+base_pars['cluster_rel_sizes'] = np.array([
+    0.02, #the main core group
+    #the ones that the core group can connect to
+    0.065, 0.065, 0.065,
+    0.065, 0.065, 0.065,
+    0.065, 0.065, 0.06,
+    #the ones not reached by the core group
+    0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04
+])
+H = 1   # heavy mixing
+L = 0.001  # very little mixing
+#I want the core group to mix very well with each of the 60% clusters while the 40% very little, and also little mixing between any non-core clusters
+add_mixing = np.full((n_clusters, n_clusters), L, dtype=float)
+np.fill_diagonal(add_mixing, 0.1) #less mixing within clusters, this should help with clusters still having some size   
+# set heavy mixing between cluster 0 and clusters 1..9 (both directions)
+add_mixing[0, 1:10] = H
+add_mixing[1:10, 0] = H
+base_pars['add_mixing'] = add_mixing
+base_pars['m_partners'] = dict(a=dict(dist='poisson1', par1=0.90)) # Everyone in this layer has one partner; this captures *additional* partners. If using a poisson distribution, par1 is roughly equal to the proportion of people with >1 partner
+base_pars['f_partners']  = dict(a=dict(dist='poisson1', par1=0.90))
 #further calibration figures
 #initialise genotype_pars as a concept
 #base_pars['genotype_pars'] = sc.objdict()
@@ -71,16 +85,18 @@ base_pars['relative_rel_sizes']= [0.6, 0.1, 0.1, 0.1, 0.1]
 #base_pars['genotype_pars']['ohr']['cin_fn']['k'] = 0.074766782
 #base_pars['genotype_pars']['ohr']['dur_cin']['par1'] = 10.941333033716116
 #base_pars['genotype_pars']['ohr']['rel_beta'] = 0.9408537321469647
-
+#base_pars['beta'] = 0.3304907040374987,
+#base_pars['f_cross_layer'] = 0.04400514,
+#base_pars['m_cross_layer'] = 0.4996342079150136
 #because of the order, you have to import a new variable instead of base_pars (?)
 base_pars_geno = base_pars
 
 if __name__ == "__main__":
-    import hpvsim as hpv
+    import hpvsim as hpv 
 
     base_pars['verbose'] = 0
-
+    print(type(base_pars_geno['add_mixing']), base_pars_geno['add_mixing'].shape)
+    print(type(base_pars_geno['cluster_rel_sizes']), base_pars_geno['cluster_rel_sizes'].shape, base_pars_geno['cluster_rel_sizes'].sum())
     sim = hpv.Sim(base_pars_geno)
-    print(sim.pars['genotype_pars']['hi5'])
     sim.run()
     sim.plot()

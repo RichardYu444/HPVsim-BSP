@@ -30,20 +30,20 @@ if __name__=="__main__":
     
     #I have added new extended ranges where the best parameters from the [B] cals are near to the sides of the ranges. old ranges commented to the right  
     calib_pars = dict(
-            beta=[0.25,0.00,0.50],#1st, [0.25,0.00,0.50], 2nd [0.25,0.00,0.50]
+            beta=[0.25,0.00,0.50],# 1st, [0.25,0.00,0.50], 2nd [0.25,0.00,0.50]
             f_cross_layer= [0.15, 0, 1], #1st,  [0.15, 0, 1]
-            m_cross_layer= [0.4, 0, 1], #1st, [0.25, 0, 1]
+            m_cross_layer= [0.25, 0, 1], #1st, [0.25, 0, 1]
             
         )
 
     genotype_pars = dict(
         hpv16=dict(
-            cin_fn=dict(k=[0.25, 0.0, 1.5]),#1st, dict(k=[0.25, 0.0, 1.0])
-            dur_cin=dict(par1=[5, 1, 16])#1st, dict(par1=[5, 1, 12])
+            cin_fn=dict(k=[0.25, 0.0, 1.0]),#1st, dict(k=[0.25, 0.0, 1.0])
+            dur_cin=dict(par1=[5, 1, 12])#1st, dict(par1=[5, 1, 12])
         ),
         hpv18=dict(
-            cin_fn=dict(k=[0.4, 0.0, 1.5]),#1st dict(k=[0.25, 0.0, 1.0])
-            dur_cin=dict(par1=[4, 0.5, 12])#1st dict(par1=[5, 1, 12])
+            cin_fn=dict(k=[0.25, 0.0, 1.0]),#1st dict(k=[0.25, 0.0, 1.0])
+            dur_cin=dict(par1=[5, 1, 12])#1st dict(par1=[5, 1, 12])
         ),
         hi5=dict(
             cin_fn=dict(k=[0.1, 0.0, 1.5]), #1st, dict(k=[0.25, 0.0, 1.0])
@@ -62,7 +62,7 @@ if __name__=="__main__":
                "caldata/mesherHPVCancerDist.csv"]
 
     # Create the calibration object, run it, and plot the results
-    name = "CalibrationRawResults/11Feb_02"
+    name = "CalibrationRawResults/28Feb_01"
     
     calib = hpv.Calibration(
         sim,

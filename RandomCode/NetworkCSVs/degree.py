@@ -28,7 +28,6 @@ nodes_df["seed"] = nodes_df["seed"].astype(int)
 seeds = sorted(nodes_df["seed"].unique())
 
 print(f"Found {len(seeds)} unique seeds")
-print("First 10 seeds:", seeds[:10])
 
 all_deg = []
 
