@@ -52,7 +52,7 @@ if __name__=="__main__":
         ),
         ohr=dict(
             cin_fn=dict(k=[0.1, 0.0, 1.5]), #1st, dict(k=[0.25, 0.0, 1.0])
-            dur_cin=dict(par1=[3, 1, 12]), #1st dict(par1=[5, 1, 12])
+            dur_cin=dict(par1=[5, 1, 12]), #1st dict(par1=[5, 1, 12])
             rel_beta=[0.9,0,1] #1st [0.9,0,1]
         )
     )
@@ -62,7 +62,7 @@ if __name__=="__main__":
                "caldata/mesherHPVCancerDist.csv"]
 
     # Create the calibration object, run it, and plot the results
-    name = "CalibrationRawResults/28Feb_01"
+    name = "CalibrationRawResults/01Mar_01"
     
     calib = hpv.Calibration(
         sim,
